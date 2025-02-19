@@ -1,0 +1,76 @@
+version: '3.8'
+
+services:
+  rabbitmq:
+    image: "rabbitmq:3-management"
+    container_name: rabbitmq
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD-SHELL", "rabbitmq-diagnostics check_running || exit 1"]
+      interval: 10s
+      timeout: 20s
+      retries: 5
+      start_period: 5s
+    ports:
+      - "5672:5672"  # порт для сообщений
+      - "15672:15672" # веб-интерфейс управления
+    env_file:
+      - .env
+    restart: always
+
+  postgres:
+    image: "postgres:15"
+    container_name: postgres
+    ports:
+      - "5443:5432"
+    env_file:
+      - .env
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: always
+
+  redis:
+    image: "redis:alpine"
+    container_name: redis
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+    restart: always
+
+  consumer:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: python -m src.consumer
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      postgres:
+        condition: service_started
+      redis:
+        condition: service_started
+    env_file:
+      - .env
+    restart: always
+
+  producer:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: python -m src.producer
+    depends_on:
+      - rabbitmq
+      - postgres
+      - redis
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    restart: always
+
+volumes:
+  postgres_data:
+  rabbitmq_data:
+  redis_data:

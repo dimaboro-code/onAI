@@ -6,7 +6,7 @@ from fastapi_limiter import FastAPILimiter
 from fastapi_limiter.depends import RateLimiter
 from starlette.responses import JSONResponse
 
-from src.config import TIMES_TO_LIMIT, SECONDS_TO_LIMIT, REDIS_URL, logger
+from src.config import TIMES_TO_LIMIT, SECONDS_TO_LIMIT, REDIS_URL, logger, APP_PORT, APP_HOST
 from src.rabbit import rabbitmq_service
 from src.models import InputMessage
 from src.database import delete_all_messages, get_async_session
@@ -62,7 +62,6 @@ async def send_message_to_rabbitmq(message: InputMessage):
     """
     logger.info("📩 Получено новое сообщение")
     logger.debug(f"📜 Содержимое сообщения: {message.model_dump_json()}")
-
     response = await rabbitmq_service.send_message(message)
     return response
 
@@ -74,11 +73,16 @@ async def delete_dialog_data(session=Depends(get_async_session)):
     """
     logger.info("🗑 Удаление данных диалога")
     try:
-        async with session() as s:
-            await delete_all_messages(s)
+        await delete_all_messages(session)
         message = "✅ Данные диалога удалены"
         logger.info(message)
         return JSONResponse(status_code=200, content={"message": message})
     except Exception as exc:
         logger.exception("❌ Ошибка при удалении данных диалога:", exc_info=exc)
         raise HTTPException(status_code=500, detail="Ошибка при удалении данных диалога")
+
+
+if __name__ == "__main__":
+    import uvicorn
+
+    uvicorn.run(app, host=APP_HOST, port=APP_PORT)

@@ -15,7 +15,7 @@ from src.database import (
     create_tables,
 )
 from src.models import InputMessage
-from src.openai import get_answer
+from src.openai_service import get_answer
 
 
 def get_messages_list_as_json(messages: list[DBMessage]) -> list[dict]:
@@ -59,7 +59,7 @@ async def send_answer(callback_url: HttpUrl, answer: str) -> None:
     """
     try:
         async with httpx.AsyncClient() as client:
-            response = await client.post(callback_url, json={"message": answer})
+            response = await client.post(str(callback_url), json={"message": answer})
             logger.info(f"📨 Ответ отправлен, статус-код: {response.status_code}")
     except httpx.HTTPError as exc:
         logger.error(f"❌ Ошибка при отправке ответа: {exc}")

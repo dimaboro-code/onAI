@@ -1,3 +1,4 @@
+from contextlib import asynccontextmanager
 from datetime import datetime
 from enum import Enum
 from sqlalchemy import Enum as EnumSQL, select, delete
@@ -29,6 +30,7 @@ class DBMessage(Base):
     role: Mapped[Role] = mapped_column(EnumSQL(Role), nullable=False)
 
 
+@asynccontextmanager
 async def get_async_session() -> AsyncSession:
     """Генератор асинхронных сессий для работы с БД"""
     async with async_session() as session:

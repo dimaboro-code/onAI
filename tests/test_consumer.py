@@ -6,6 +6,7 @@ from httpx import Response
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from src.config import RABBITMQ_URL, QUEUE_NAME
 from src.consumer import (
     get_messages_list_as_json,
     process_message,
@@ -135,9 +136,7 @@ async def test_consume_partial():
     Бесконечный цикл не тестируем напрямую,
     но проверяем, что базовая логика работает.
     """
-    mock_connection = MagicMock
-    mock_connection.return_value.__aenter__.return_value = mock_connection
-    mock_connection.return_value.__aexit__ = AsyncMock()
+    mock_connection = AsyncMock()
     mock_channel = AsyncMock()
     mock_queue = AsyncMock()
 
@@ -151,6 +150,6 @@ async def test_consume_partial():
 
         mock_tables.assert_awaited_once()
 
-        mock_connect.assert_awaited_once_with("amqp://guest:guest@localhost:5672/")
-        mock_channel.declare_queue.assert_awaited_once_with("my_queue", durable=True)
-        mock_queue.assert_called_once()
+        mock_connect.assert_awaited_once_with(RABBITMQ_URL)
+        mock_channel.declare_queue.assert_called_once_with(QUEUE_NAME, durable=True)
+        mock_queue.consume.assert_awaited_once()

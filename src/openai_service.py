@@ -20,14 +20,10 @@ async def get_answer(json_messages: list[dict]) -> str:
             model=MODEL,
             messages=json_messages,
         )
-
         answer: str = response.choices[0].message.content
-
         logger.info("✅ Ответ от OpenAI получен")
         logger.debug(f"📜 Ответ: {answer}")
-
         return answer
-
     except Exception as e:
         logger.exception("❌ Ошибка запроса к OpenAI:", exc_info=e)
         return "Ошибка при обработке запроса к OpenAI."

@@ -6,8 +6,12 @@ load_dotenv()
 
 # Конфигурация Redis и RabbitMQ
 REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379")
+# REDIS_URL = "redis://localhost:6379" #  для локального запуска
 RABBITMQ_URL = os.getenv("RABBITMQ_URL", "amqp://guest:guest@localhost/")
+DATABASE_URL = os.getenv("DATABASE_URL", "postgresql+asyncpg://user:password@localhost/dbname")
 QUEUE_NAME = os.getenv("QUEUE_NAME", "task_queue")
+APP_HOST = os.getenv("APP_HOST", 'localhost')
+APP_PORT = int(os.getenv("APP_PORT", 8000))
 
 # Ограничения
 TIMES_TO_LIMIT = 10
@@ -29,7 +33,7 @@ def setup_logger():
     logger = logging.getLogger("onAI")
 
     # Лог в файл
-    file_handler = logging.FileHandler("logs/onAI.log")
+    file_handler = logging.FileHandler("onAI.log")
     file_handler.setLevel(LOGGING_LEVEL)
     formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
     file_handler.setFormatter(formatter)
@@ -39,4 +43,3 @@ def setup_logger():
 
 
 logger = setup_logger()
-DATABASE_URL = os.getenv("DATABASE_URL", "postgresql+asyncpg://user:password@localhost/dbname")
