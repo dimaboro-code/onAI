@@ -24,7 +24,7 @@ class DBMessage(Base):
     __tablename__ = "messages"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    created_at: Mapped[datetime] = mapped_column(default=datetime.utcnow)  # UTC - более корректный вариант
+    created_at: Mapped[datetime] = mapped_column(default=datetime.now())
 
     content: Mapped[str]
     role: Mapped[Role] = mapped_column(EnumSQL(Role), nullable=False)

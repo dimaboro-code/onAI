@@ -21,7 +21,7 @@ MODEL = os.getenv("MODEL", "gpt-4o-mini")
 
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "ваш_ключ_по_умолчанию")
 
-LOGGING_LEVEL = int(os.getenv("LOGGING_LEVEL", logging.DEBUG))
+LOGGING_LEVEL = os.getenv("LOGGING_LEVEL", logging.DEBUG)
 
 
 def setup_logger():

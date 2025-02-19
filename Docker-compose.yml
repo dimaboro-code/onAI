@@ -9,11 +9,10 @@ services:
     healthcheck:
       test: ["CMD-SHELL", "rabbitmq-diagnostics check_running || exit 1"]
       interval: 10s
-      timeout: 20s
+      timeout: 40s
       retries: 5
       start_period: 5s
     ports:
-      - "5672:5672"  # порт для сообщений
       - "15672:15672" # веб-интерфейс управления
     env_file:
       - .env
@@ -22,8 +21,6 @@ services:
   postgres:
     image: "postgres:15"
     container_name: postgres
-    ports:
-      - "5443:5432"
     env_file:
       - .env
     volumes:
@@ -35,8 +32,6 @@ services:
     container_name: redis
     volumes:
       - redis_data:/data
-    ports:
-      - "6379:6379"
     restart: always
 
   consumer:

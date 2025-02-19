@@ -3,17 +3,16 @@ from pydantic import BaseModel
 
 
 class OutputMessage(BaseModel):
-    text: str
+    message: str
 
 
 app = FastAPI()
 
 
 @app.post("/")
-async def webhook(message: Request):
-    body = await message.body()
-    print(body.decode("utf-8"))
-    return {"message": "message.text"}
+async def webhook(message: OutputMessage):
+    print(message.message)
+    return {"status": "ok"}
 
 
 if __name__ == '__main__':
