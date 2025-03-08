@@ -91,6 +91,7 @@ async def consume() -> None:
     connection = await aio_pika.connect_robust(RABBITMQ_URL)
     async with connection:
         channel = await connection.channel()
+        await channel.set_qos(prefetch_count=5)
         queue = await channel.declare_queue(QUEUE_NAME, durable=True)
 
         logger.info("🔄 Ожидание сообщений от RabbitMQ...")

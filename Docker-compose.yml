@@ -28,7 +28,7 @@ services:
     restart: always
 
   redis:
-    image: "redis:alpine"
+    image: "redis:latest"
     container_name: redis
     volumes:
       - redis_data:/data
